@@ -135,6 +135,7 @@ public class MainActivity extends AppCompatActivity
         if(Ip.equals("") || Port.equals("") || Token.equals("")) {
             Toast.makeText(getApplicationContext(),"Server settings needed. Check Settings.",Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
+            checkSwitchStatusButton.setEnabled(true);
             return;
         }
 
@@ -149,6 +150,7 @@ public class MainActivity extends AppCompatActivity
         } catch (Exception e) {
             Toast.makeText(getApplicationContext(),"Cannot get switch status at the moment. Check Settings.",Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
+            checkSwitchStatusButton.setEnabled(true);
         }
     }
 
