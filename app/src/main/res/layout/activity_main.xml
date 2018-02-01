@@ -67,6 +67,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch1"
                             android:text="Switch 1"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -95,6 +96,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch2"
                             android:text="Switch 2"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -128,6 +130,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch3"
                             android:text="Switch 3"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -156,6 +159,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch4"
                             android:text="Switch 4"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -189,6 +193,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch5"
                             android:text="Switch 5"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -217,6 +222,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch6"
                             android:text="Switch 6"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -250,6 +256,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch7"
                             android:text="Switch 7"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>
@@ -278,6 +285,7 @@
                             android:textAlignment="center"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:id="@+id/labelSwitch8"
                             android:text="Switch 8"/>
                     </LinearLayout>
                 </android.support.v7.widget.CardView>

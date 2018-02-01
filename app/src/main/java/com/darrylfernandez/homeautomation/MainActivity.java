@@ -23,6 +23,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SettingsSaveCallBack {
 
     protected OkHttpClient httpClient;
     protected String Ip;
@@ -96,9 +97,29 @@ public class MainActivity extends AppCompatActivity
 
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
+        // server config
         Ip = preferences.getString("ip", "");
         Port = preferences.getString("port", "");
         Token = preferences.getString("token", "");
+
+        // switch names
+        TextView sw1Label = findViewById(R.id.labelSwitch1);
+        TextView sw2Label = findViewById(R.id.labelSwitch2);
+        TextView sw3Label = findViewById(R.id.labelSwitch3);
+        TextView sw4Label = findViewById(R.id.labelSwitch4);
+        TextView sw5Label = findViewById(R.id.labelSwitch5);
+        TextView sw6Label = findViewById(R.id.labelSwitch6);
+        TextView sw7Label = findViewById(R.id.labelSwitch7);
+        TextView sw8Label = findViewById(R.id.labelSwitch8);
+
+        sw1Label.setText(preferences.getString("switch1", ""));
+        sw2Label.setText(preferences.getString("switch2", ""));
+        sw3Label.setText(preferences.getString("switch3", ""));
+        sw4Label.setText(preferences.getString("switch4", ""));
+        sw5Label.setText(preferences.getString("switch5", ""));
+        sw6Label.setText(preferences.getString("switch6", ""));
+        sw7Label.setText(preferences.getString("switch7", ""));
+        sw8Label.setText(preferences.getString("switch8", ""));
     }
 
     private void _getSwitchStatus() {
@@ -151,6 +172,9 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+
+            SettingsActivity.delegate = this;
+
             Intent SettingsIntent = new Intent(MainActivity.this, SettingsActivity.class);
             MainActivity.this.startActivity(SettingsIntent);
         }
@@ -308,6 +332,11 @@ public class MainActivity extends AppCompatActivity
         OkHttpHandler okHttpHandler = new OkHttpHandler();
         okHttpHandler.delegate = new AfterSwitchOnCallback();
         okHttpHandler.execute(url);
+    }
+
+    @Override
+    public void afterSaved() {
+        _getUpdatedSettings();
     }
 
     public class AfterSwitchOnCallback implements AsyncResponse {
