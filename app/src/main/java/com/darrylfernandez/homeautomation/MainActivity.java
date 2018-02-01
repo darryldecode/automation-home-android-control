@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity
         progressDialog.show();
 
         if(Ip.equals("") || Port.equals("") || Token.equals("")) {
-            Toast.makeText(getApplicationContext(),"Cannot get switch status at the moment. Check Settings.",Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(),"Server settings needed. Check Settings.",Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -141,9 +141,14 @@ public class MainActivity extends AppCompatActivity
 
         Log.i("URL",url);
 
-        OkHttpHandler okHttpHandler = new OkHttpHandler();
-        okHttpHandler.delegate = new AfterCheckSwitchStatusCallback();
-        okHttpHandler.execute(url);
+        try {
+            OkHttpHandler okHttpHandler = new OkHttpHandler();
+            okHttpHandler.delegate = new AfterCheckSwitchStatusCallback();
+            okHttpHandler.execute(url);
+        } catch (Exception e)
+        {
+            Toast.makeText(getApplicationContext(),"Cannot get switch status at the moment. Check Settings.",Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
