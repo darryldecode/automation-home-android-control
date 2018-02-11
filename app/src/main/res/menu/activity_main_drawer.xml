@@ -8,6 +8,10 @@
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_gamepad_black_24dp"
             android:title="Home Control" />
+        <item
+            android:id="@+id/nav_schedule"
+            android:icon="@drawable/ic_access_time_black_24dp"
+            android:title="Schedules" />
     </group>
 
 </menu>

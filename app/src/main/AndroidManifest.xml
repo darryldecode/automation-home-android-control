@@ -12,7 +12,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
@@ -22,8 +22,15 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SettingsActivity"
+            android:name=".activities.SettingsActivity"
+            android:parentActivityName=".activities.MainActivity"
             android:label="@string/title_activity_settings" />
+        <activity
+            android:parentActivityName=".activities.MainActivity"
+            android:name=".activities.ScheduleActivity" />
+        <activity
+            android:parentActivityName=".activities.ScheduleActivity"
+            android:name=".activities.ScheduleSwitchActivity" />
     </application>
 
 </manifest>

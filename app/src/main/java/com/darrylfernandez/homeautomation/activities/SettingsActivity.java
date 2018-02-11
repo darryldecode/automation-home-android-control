@@ -1,4 +1,4 @@
-package com.darrylfernandez.homeautomation;
+package com.darrylfernandez.homeautomation.activities;
 
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -8,9 +8,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.darrylfernandez.homeautomation.R;
+import com.darrylfernandez.homeautomation.interfaces.SettingsSaveCallBack;
+import com.darrylfernandez.homeautomation.models.Settings;
+
 public class SettingsActivity extends AppCompatActivity {
 
     public static SettingsSaveCallBack delegate = null;
+
+    private Settings _settings;
 
     // server settings
     protected EditText IpEditText;
@@ -32,21 +38,23 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        _settings = new Settings(this);
+
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         // get the values from preference
-        String ip = preferences.getString("ip", "");
-        String port = preferences.getString("port", "");
-        String token = preferences.getString("token", "");
+        String ip = _settings.ip;
+        String port = _settings.port;
+        String token = _settings.token;
 
-        String sw1 = preferences.getString("switch1", "Switch 1");
-        String sw2 = preferences.getString("switch2", "Switch 2");
-        String sw3 = preferences.getString("switch3", "Switch 3");
-        String sw4 = preferences.getString("switch4", "Switch 4");
-        String sw5 = preferences.getString("switch5", "Switch 5");
-        String sw6 = preferences.getString("switch6", "Switch 6");
-        String sw7 = preferences.getString("switch7", "Switch 7");
-        String sw8 = preferences.getString("switch8", "Switch 8");
+        String sw1 = _settings.switch1Alias;
+        String sw2 = _settings.switch2Alias;
+        String sw3 = _settings.switch3Alias;
+        String sw4 = _settings.switch4Alias;
+        String sw5 = _settings.switch5Alias;
+        String sw6 = _settings.switch6Alias;
+        String sw7 = _settings.switch7Alias;
+        String sw8 = _settings.switch8Alias;
 
         // set the ui elements
         IpEditText = findViewById(R.id.editTextIp);
@@ -99,22 +107,23 @@ public class SettingsActivity extends AppCompatActivity {
 
         } else {
 
-            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-            SharedPreferences.Editor editor = preferences.edit();
-            editor.putString("ip",ip);
-            editor.putString("port",port);
-            editor.putString("token",token);
-            editor.putString("switch1",sw1);
-            editor.putString("switch2",sw2);
-            editor.putString("switch3",sw3);
-            editor.putString("switch4",sw4);
-            editor.putString("switch5",sw5);
-            editor.putString("switch6",sw6);
-            editor.putString("switch7",sw7);
-            editor.putString("switch8",sw8);
-            editor.apply();
+            _settings.ip = ip;
+            _settings.port = port;
+            _settings.token = token;
+            _settings.switch1Alias = sw1;
+            _settings.switch2Alias = sw2;
+            _settings.switch3Alias = sw3;
+            _settings.switch4Alias = sw4;
+            _settings.switch5Alias = sw5;
+            _settings.switch6Alias = sw6;
+            _settings.switch7Alias = sw7;
+            _settings.switch8Alias = sw8;
 
-            Toast.makeText(getApplicationContext(),"Settings saved!",Toast.LENGTH_SHORT).show();
+            if(!_settings.save()) {
+                Toast.makeText(getApplicationContext(),_settings.errorMessage,Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(getApplicationContext(),"Settings saved!",Toast.LENGTH_SHORT).show();
+            }
 
             delegate.afterSaved();
         }

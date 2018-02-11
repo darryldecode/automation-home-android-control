@@ -1,6 +1,8 @@
-package com.darrylfernandez.homeautomation;
+package com.darrylfernandez.homeautomation.handlers;
 
 import android.os.AsyncTask;
+
+import com.darrylfernandez.homeautomation.interfaces.AsyncResponse;
 
 import java.io.IOException;
 
@@ -10,7 +12,7 @@ import okhttp3.Response;
 
 public class OkHttpHandler extends AsyncTask<String, Void, String> {
 
-    public OkHttpClient client = new OkHttpClient();
+    private OkHttpClient client = new OkHttpClient();
     public AsyncResponse delegate = null;
 
     public OkHttpHandler(){}

@@ -1,4 +1,4 @@
-package com.darrylfernandez.homeautomation;
+package com.darrylfernandez.homeautomation.interfaces;
 
 public interface SettingsSaveCallBack {
     void afterSaved();

@@ -1,16 +1,8 @@
-package com.darrylfernandez.homeautomation;
+package com.darrylfernandez.homeautomation.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
-import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -26,21 +18,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.darrylfernandez.homeautomation.HomeAutomation;
+import com.darrylfernandez.homeautomation.R;
+import com.darrylfernandez.homeautomation.handlers.OkHttpHandler;
+import com.darrylfernandez.homeautomation.interfaces.AsyncResponse;
+import com.darrylfernandez.homeautomation.interfaces.SettingsSaveCallBack;
+import com.darrylfernandez.homeautomation.models.Switch;
+
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, SettingsSaveCallBack {
 
     protected OkHttpClient httpClient;
-    protected String Ip;
-    protected String Port;
-    protected String Token;
     protected ProgressDialog progressDialog;
 
     // ui
@@ -54,7 +46,7 @@ public class MainActivity extends AppCompatActivity
     ImageView switch8ImgView;
     Button checkSwitchStatusButton;
 
-    protected ArrayList<Switch> switches = new ArrayList<Switch>();
+    protected HomeAutomation homeAutomation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +66,9 @@ public class MainActivity extends AppCompatActivity
 
         // create the Http Client
         httpClient = new OkHttpClient();
+
+        // the backbone
+        homeAutomation = new HomeAutomation(this);
 
         // set settings
         _getUpdatedSettings();
@@ -95,14 +90,7 @@ public class MainActivity extends AppCompatActivity
 
     private void _getUpdatedSettings() {
 
-        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        // server config
-        Ip = preferences.getString("ip", "");
-        Port = preferences.getString("port", "");
-        Token = preferences.getString("token", "");
-
-        // switch names
+        // set switch names (aliases)
         TextView sw1Label = findViewById(R.id.labelSwitch1);
         TextView sw2Label = findViewById(R.id.labelSwitch2);
         TextView sw3Label = findViewById(R.id.labelSwitch3);
@@ -112,14 +100,14 @@ public class MainActivity extends AppCompatActivity
         TextView sw7Label = findViewById(R.id.labelSwitch7);
         TextView sw8Label = findViewById(R.id.labelSwitch8);
 
-        sw1Label.setText(preferences.getString("switch1", ""));
-        sw2Label.setText(preferences.getString("switch2", ""));
-        sw3Label.setText(preferences.getString("switch3", ""));
-        sw4Label.setText(preferences.getString("switch4", ""));
-        sw5Label.setText(preferences.getString("switch5", ""));
-        sw6Label.setText(preferences.getString("switch6", ""));
-        sw7Label.setText(preferences.getString("switch7", ""));
-        sw8Label.setText(preferences.getString("switch8", ""));
+        sw1Label.setText(homeAutomation.settings.switch1Alias);
+        sw2Label.setText(homeAutomation.settings.switch2Alias);
+        sw3Label.setText(homeAutomation.settings.switch3Alias);
+        sw4Label.setText(homeAutomation.settings.switch4Alias);
+        sw5Label.setText(homeAutomation.settings.switch5Alias);
+        sw6Label.setText(homeAutomation.settings.switch6Alias);
+        sw7Label.setText(homeAutomation.settings.switch7Alias);
+        sw8Label.setText(homeAutomation.settings.switch8Alias);
     }
 
     private void _getSwitchStatus() {
@@ -132,14 +120,14 @@ public class MainActivity extends AppCompatActivity
         progressDialog.setMessage("Checking server connection, please wait..");
         progressDialog.show();
 
-        if(Ip.equals("") || Port.equals("") || Token.equals("")) {
+        if(homeAutomation.hasInvalidConfig()) {
             Toast.makeText(getApplicationContext(),"Server settings needed. Check Settings.",Toast.LENGTH_SHORT).show();
             progressDialog.dismiss();
             checkSwitchStatusButton.setEnabled(true);
             return;
         }
 
-        String url = "http://" + Ip + ":" + Port + "/status";
+        String url = homeAutomation.getSwitchStatusWebApiEndpoint();
 
         Log.i("URL",url);
 
@@ -200,6 +188,11 @@ public class MainActivity extends AppCompatActivity
             // Handle the camera action
         }
 
+        if (id == R.id.nav_schedule) {
+            Intent ScheduleIntent = new Intent(MainActivity.this, ScheduleActivity.class);
+            MainActivity.this.startActivity(ScheduleIntent);
+        }
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
@@ -212,9 +205,9 @@ public class MainActivity extends AppCompatActivity
 
     public void clickSwitch(View v) throws IOException {
 
-        String url = "http://" + Ip + ":" + Port + "?token=" + Token;
+        String url = homeAutomation.getSwitchCommandWebApiEndpoint();
 
-        if(switches.isEmpty()) {
+        if(homeAutomation.switches.isEmpty()) {
             Toast.makeText(getApplicationContext(),"Please check switch status first.",Toast.LENGTH_SHORT).show();
             return;
         }
@@ -222,113 +215,113 @@ public class MainActivity extends AppCompatActivity
         switch (v.getId()) {
 
             case R.id.cardSwitch1:
-                if(switches.get(0).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH1))
                 {
-                    url += "&control=1&value=0";
-                    switches.get(0).value = "0";
+                    url += homeAutomation.getCommandString("1","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH1);
                     switch1ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch1ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=1&value=1";
-                    switches.get(0).value = "1";
+                    url += homeAutomation.getCommandString("1","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH1);
                     switch1ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch1ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
                 break;
             case R.id.cardSwitch2:
-                if(switches.get(1).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH2))
                 {
-                    url += "&control=2&value=0";
-                    switches.get(1).value = "0";
+                    url += homeAutomation.getCommandString("2","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH2);
                     switch2ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch2ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=2&value=1";
-                    switches.get(1).value = "1";
+                    url += homeAutomation.getCommandString("2","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH2);
                     switch2ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch2ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
                 break;
             case R.id.cardSwitch3:
-                if(switches.get(2).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH3))
                 {
-                    url += "&control=3&value=0";
-                    switches.get(2).value = "0";
+                    url += homeAutomation.getCommandString("3","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH3);
                     switch3ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch3ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=3&value=1";
-                    switches.get(2).value = "1";
+                    url += homeAutomation.getCommandString("3","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH3);
                     switch3ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch3ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
                 break;
             case R.id.cardSwitch4:
-                if(switches.get(3).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH4))
                 {
-                    url += "&control=4&value=0";
-                    switches.get(3).value = "0";
+                    url += homeAutomation.getCommandString("4","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH4);
                     switch4ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch4ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=4&value=1";
-                    switches.get(3).value = "1";
+                    url += homeAutomation.getCommandString("4","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH4);
                     switch4ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch4ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
                 break;
             case R.id.cardSwitch5:
-                if(switches.get(4).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH5))
                 {
-                    url += "&control=5&value=0";
-                    switches.get(4).value = "0";
+                    url += homeAutomation.getCommandString("5","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH5);
                     switch5ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch5ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=5&value=1";
-                    switches.get(4).value = "1";
+                    url += homeAutomation.getCommandString("5","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH5);
                     switch5ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch5ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
                 break;
             case R.id.cardSwitch6:
-                if(switches.get(5).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH6))
                 {
-                    url += "&control=6&value=0";
-                    switches.get(5).value = "0";
+                    url += homeAutomation.getCommandString("6","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH6);
                     switch6ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch6ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=6&value=1";
-                    switches.get(5).value = "1";
+                    url += homeAutomation.getCommandString("6","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH6);
                     switch6ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch6ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
                 break;
             case R.id.cardSwitch7:
-                if(switches.get(6).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH7))
                 {
-                    url += "&control=7&value=0";
-                    switches.get(6).value = "0";
+                    url += homeAutomation.getCommandString("7","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH7);
                     switch7ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch7ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=7&value=1";
-                    switches.get(6).value = "1";
+                    url += homeAutomation.getCommandString("7","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH7);
                     switch7ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch7ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
                 break;
             case R.id.cardSwitch8:
-                if(switches.get(7).value.equals("1"))
+                if(homeAutomation.switchIsOn(HomeAutomation.SWITCH8))
                 {
-                    url += "&control=8&value=0";
-                    switches.get(7).value = "0";
+                    url += homeAutomation.getCommandString("8","0");
+                    homeAutomation.markSwitchAsOff(HomeAutomation.SWITCH8);
                     switch8ImgView.setImageResource(R.drawable.ic_compare_arrows_black_24dp);
                     switch8ImgView.setBackground(getResources().getDrawable(R.drawable.grey));
                 } else {
-                    url += "&control=8&value=1";
-                    switches.get(7).value = "1";
+                    url += homeAutomation.getCommandString("8","1");
+                    homeAutomation.markSwitchAsOn(HomeAutomation.SWITCH8);
                     switch8ImgView.setImageResource(R.drawable.ic_check_black_24dp);
                     switch8ImgView.setBackground(getResources().getDrawable(R.drawable.green));
                 }
@@ -374,17 +367,17 @@ public class MainActivity extends AppCompatActivity
             for(String kv : controlsKeyVal) {
                 if(!kv.equals("")) {
                     String[] s = kv.split("=");
-                    switches.add(new Switch(s[0],s[1]));
+                    homeAutomation.switches.add(new Switch(s[0],s[1]));
                 }
             }
 
-            for(Switch sw : switches)
+            for(Switch sw : homeAutomation.switches)
             {
                 int resourceId = getResources().getIdentifier(sw.name,"id",getApplicationContext().getPackageName());
 
                 ImageView imgView = findViewById(resourceId);
 
-                if(sw.value.equals("1")) {
+                if(sw.isOn()) {
                     imgView.setImageResource(R.drawable.ic_check_black_24dp);
                     imgView.setBackground(getResources().getDrawable(R.drawable.green));
                 } else {
