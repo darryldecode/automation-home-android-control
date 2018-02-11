@@ -11,7 +11,8 @@ import java.util.ArrayList;
 public class HomeAutomation {
 
     // app version
-    public static final String VERSION = "0.0.1";
+    public static final String APP_NAME = "Home Automation";
+    public static final String VERSION = "0.0.2";
 
     // values
     public static final String VALUE_ON = "1";

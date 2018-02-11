@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity
     ImageView switch7ImgView;
     ImageView switch8ImgView;
     Button checkSwitchStatusButton;
+    TextView mainTitle;
 
     protected HomeAutomation homeAutomation;
 
@@ -83,6 +84,11 @@ public class MainActivity extends AppCompatActivity
         switch7ImgView = findViewById(R.id.control7);
         switch8ImgView = findViewById(R.id.control8);
         checkSwitchStatusButton = findViewById(R.id.btnCheckSwitchStatus);
+        mainTitle = findViewById(R.id.textViewMainTitle);
+
+        // set main title
+        String mTitle = HomeAutomation.APP_NAME + " " + HomeAutomation.VERSION;
+        mainTitle.setText(mTitle);
 
         // get current switch status if possible
         _getSwitchStatus();
