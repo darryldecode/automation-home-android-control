@@ -42,6 +42,7 @@ public class HomeAutomation {
         instance = this;
     }
 
+    // check if we have a valid server config
     public boolean hasInvalidConfig() {
         return (settings.ip.equals("") || settings.port.equals("") || settings.token.equals(""));
     }
