@@ -14,11 +14,11 @@ public class HomeAutomation {
 
     // app version
     public static final String APP_NAME = "Home Automation";
-    public static final String VERSION = "v0.0.3";
+    public static final String VERSION = "v0.0.4";
 
     // values
     public static final String VALUE_ON = "1";
-    public static final String VALUE_OFF = "1";
+    public static final String VALUE_OFF = "0";
 
     // switch ids
     public static final String SWITCH1 = "control1";
@@ -134,6 +134,19 @@ public class HomeAutomation {
             SwitchSchedule currSwSched = i.next();
 
             if(currSwSched.aSwitch.name.equals(sw.name)) i.remove();
+        }
+    }
+
+    // remove the switch schedule on the running schedules
+    public static void removeSwitchScheduleByRequestCode(int requestCode) {
+
+        Iterator<SwitchSchedule> i = switchSchedules.iterator();
+
+        while (i.hasNext()) {
+
+            SwitchSchedule currSwSched = i.next();
+
+            if(currSwSched.requestCode == requestCode) i.remove();
         }
     }
 }

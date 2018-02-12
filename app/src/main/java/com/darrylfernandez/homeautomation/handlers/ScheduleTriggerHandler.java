@@ -17,7 +17,6 @@ public class ScheduleTriggerHandler extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
 
         Log.i("SCHEDULE TRIGGER","got it");
-        Toast.makeText(context,"Triggered..",Toast.LENGTH_LONG).show();
 
         if(HomeAutomation.instance != null) {
 
@@ -27,6 +26,7 @@ public class ScheduleTriggerHandler extends BroadcastReceiver {
             // get intent params
             String action = intent.getStringExtra("action");
             String switchName = intent.getStringExtra("switchName");
+            int requestCode = intent.getIntExtra("requestCode",0);
 
             final String act = action.equals("on") ? "1" : "0";
             Switch aSwitch = homeAutomation.getSwitch(switchName);
@@ -45,7 +45,7 @@ public class ScheduleTriggerHandler extends BroadcastReceiver {
 
             // clean up
             // remove the running schedule on our list or running schedules
-            HomeAutomation.removeSwitchSchedule(aSwitch);
+            HomeAutomation.removeSwitchScheduleByRequestCode(requestCode);
 
         } else {
             Log.i(TAG,"No Home Automation instance");

@@ -1,5 +1,6 @@
 package com.darrylfernandez.homeautomation.adapters;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -15,8 +16,10 @@ import com.darrylfernandez.homeautomation.HomeAutomation;
 import com.darrylfernandez.homeautomation.R;
 import com.darrylfernandez.homeautomation.models.SwitchSchedule;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ActiveSchedulesAdapter extends RecyclerView.Adapter {
 
@@ -34,12 +37,14 @@ public class ActiveSchedulesAdapter extends RecyclerView.Adapter {
 
         private TextView switchName;
         private TextView time;
+        private TextView timeRemaining;
         private Button remove;
 
         private MyViewHolder(View itemView) {
             super(itemView);
             switchName = itemView.findViewById(R.id.textViewActiveScheduleSwitchName);
             time = itemView.findViewById(R.id.textViewActiveScheduleTime);
+            timeRemaining = itemView.findViewById(R.id.textViewActiveScheduleTimeRemaining);
             remove = itemView.findViewById(R.id.buttonActiveScheduleRemove);
         }
     }
@@ -64,11 +69,15 @@ public class ActiveSchedulesAdapter extends RecyclerView.Adapter {
         sched.add(Calendar.HOUR,switchSchedule.scheduleHours);
         sched.add(Calendar.MINUTE,switchSchedule.scheduleMinutes);
 
-        String remaining = DateUtils.formatElapsedTime((sched.getTimeInMillis() - Calendar.getInstance().getTimeInMillis())) + " Remaining";
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy 'at' h:mm a");
+
+        String dateOfAction = dateFormat.format(sched.getTime());
+        String remaining = String.valueOf(TimeUnit.MILLISECONDS.toMinutes((sched.getTimeInMillis() - Calendar.getInstance().getTimeInMillis()))) + " mins Remaining";
         String sName = switchSchedule.aSwitch.alias + " \"" + switchSchedule.action.toUpperCase() + "\"";
 
         mvh.switchName.setText(sName);
-        mvh.time.setText(remaining);
+        mvh.time.setText(dateOfAction);
+        mvh.timeRemaining.setText(remaining);
         mvh.remove.setOnClickListener(new View.OnClickListener() {
 
             @Override

@@ -29,6 +29,7 @@ public class SwitchSchedule {
     public String errorMessage = "";
     private Context _context;
     public PendingIntent pi;
+    public int requestCode;
 
     public SwitchSchedule(){}
 
@@ -39,6 +40,7 @@ public class SwitchSchedule {
         action = act;
         _context = c;
         startTime = Calendar.getInstance();
+        requestCode = (int)System.currentTimeMillis();
     }
 
     public static ArrayList<String> getSwitchValues() {
@@ -61,9 +63,10 @@ public class SwitchSchedule {
         Intent i = new Intent(_context, ScheduleTriggerHandler.class);
         i.putExtra("switchName",aSwitch.name);
         i.putExtra("action",action);
+        i.putExtra("requestCode",requestCode);
 
         // pending intent
-        pi = PendingIntent.getBroadcast(_context.getApplicationContext(),(int)System.currentTimeMillis(),i,PendingIntent.FLAG_UPDATE_CURRENT);
+        pi = PendingIntent.getBroadcast(_context.getApplicationContext(),requestCode,i,PendingIntent.FLAG_UPDATE_CURRENT);
 
         // set the alarm manager
         AlarmManager alarmManager = (AlarmManager)_context.getSystemService(Context.ALARM_SERVICE);
