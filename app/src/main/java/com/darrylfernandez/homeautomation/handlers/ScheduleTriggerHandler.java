@@ -28,15 +28,11 @@ public class ScheduleTriggerHandler extends BroadcastReceiver {
             String action = intent.getStringExtra("action");
             String switchName = intent.getStringExtra("switchName");
 
-            Log.i(TAG ," parameters--");
-            Log.i(TAG ,action);
-            Log.i(TAG ,switchName);
-            Log.i(TAG ," end parameters--");
-
             final String act = action.equals("on") ? "1" : "0";
             Switch aSwitch = homeAutomation.getSwitch(switchName);
 
-            Log.i(TAG,aSwitch.name);
+            // show toast
+            Toast.makeText(context,aSwitch.alias + " " + action.toUpperCase(),Toast.LENGTH_LONG).show();
 
             // build the web api endpoint
             String url = homeAutomation.getSwitchCommandWebApiEndpoint();
@@ -46,6 +42,11 @@ public class ScheduleTriggerHandler extends BroadcastReceiver {
 
             OkHttpHandler okHttpHandler = new OkHttpHandler();
             okHttpHandler.execute(url);
+
+            // clean up
+            // remove the running schedule on our list or running schedules
+            HomeAutomation.removeSwitchSchedule(aSwitch);
+
         } else {
             Log.i(TAG,"No Home Automation instance");
         }

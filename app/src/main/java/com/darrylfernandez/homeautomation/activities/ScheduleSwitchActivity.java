@@ -63,16 +63,7 @@ public class ScheduleSwitchActivity extends AppCompatActivity {
         currentSwitch = homeAutomation.getSwitch(currentSwitchName);
 
         // set the title
-        setTitle("Schedule for " + currentSwitch.name);
-
-        // set value if exist
-        switchSchedule = SwitchSchedule.get(this,currentSwitch);
-
-        Log.i("schedule hours: ",String.valueOf(switchSchedule.scheduleHours));
-        Log.i("schedule minutes: ",String.valueOf(switchSchedule.scheduleMinutes));
-
-        editTextScheduleHrs.setText(String.valueOf(switchSchedule.scheduleHours));
-        editTextScheduleMins.setText(String.valueOf(switchSchedule.scheduleMinutes));
+        setTitle("Schedule for " + currentSwitch.alias);
 
         // action dropdown
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item,SwitchSchedule.getSwitchValues());
@@ -100,8 +91,11 @@ public class ScheduleSwitchActivity extends AppCompatActivity {
 
         SwitchSchedule switchSchedule = new SwitchSchedule(this,currentSwitch,hrs,mins,act);
 
-        if(switchSchedule.save() && switchSchedule.addPendingTrigger()) {
+        if(switchSchedule.addPendingTrigger()) {
+
             Toast.makeText(getApplicationContext(),"Schedule set for " + currentSwitchName, Toast.LENGTH_SHORT).show();
+
+            HomeAutomation.switchSchedules.add(switchSchedule);
         } else {
             Toast.makeText(getApplicationContext(),switchSchedule.errorMessage, Toast.LENGTH_SHORT).show();
         }

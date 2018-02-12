@@ -373,7 +373,21 @@ public class MainActivity extends AppCompatActivity
             for(String kv : controlsKeyVal) {
                 if(!kv.equals("")) {
                     String[] s = kv.split("=");
-                    homeAutomation.switches.add(new Switch(s[0],s[1]));
+
+                    Switch sw = new Switch(s[0],s[1]);
+
+                    // put the alias
+                    if(sw.name.equals(HomeAutomation.SWITCH1)) sw.alias = homeAutomation.settings.switch1Alias;
+                    if(sw.name.equals(HomeAutomation.SWITCH2)) sw.alias = homeAutomation.settings.switch2Alias;
+                    if(sw.name.equals(HomeAutomation.SWITCH3)) sw.alias = homeAutomation.settings.switch3Alias;
+                    if(sw.name.equals(HomeAutomation.SWITCH4)) sw.alias = homeAutomation.settings.switch4Alias;
+                    if(sw.name.equals(HomeAutomation.SWITCH5)) sw.alias = homeAutomation.settings.switch5Alias;
+                    if(sw.name.equals(HomeAutomation.SWITCH6)) sw.alias = homeAutomation.settings.switch6Alias;
+                    if(sw.name.equals(HomeAutomation.SWITCH7)) sw.alias = homeAutomation.settings.switch7Alias;
+                    if(sw.name.equals(HomeAutomation.SWITCH8)) sw.alias = homeAutomation.settings.switch8Alias;
+
+                    // add to the available switches
+                    homeAutomation.switches.add(sw);
                 }
             }
 

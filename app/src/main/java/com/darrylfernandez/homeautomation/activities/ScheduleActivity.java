@@ -3,14 +3,20 @@ package com.darrylfernandez.homeautomation.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.darrylfernandez.homeautomation.HomeAutomation;
 import com.darrylfernandez.homeautomation.R;
+import com.darrylfernandez.homeautomation.adapters.ActiveSchedulesAdapter;
+import com.darrylfernandez.homeautomation.adapters.SwitchArrayAdapter;
 import com.darrylfernandez.homeautomation.models.Schedules;
 import com.darrylfernandez.homeautomation.models.Switch;
 
@@ -18,9 +24,11 @@ import java.util.ArrayList;
 
 public class ScheduleActivity extends AppCompatActivity {
 
-    protected String selectedItem;
+    protected Switch selectedItem;
 
     protected HomeAutomation homeAutomation;
+
+    protected RecyclerView activeSchedulesRecyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +47,9 @@ public class ScheduleActivity extends AppCompatActivity {
 
         Spinner swSelect = findViewById(R.id.selectedSwitch);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, R.layout.spinner_item,_getSwitchNames());
+
+        // switch spinner
+        SwitchArrayAdapter adapter = new SwitchArrayAdapter(this, R.layout.spinner_item,homeAutomation.switches);
 
         swSelect.setAdapter(adapter);
 
@@ -47,8 +57,8 @@ public class ScheduleActivity extends AppCompatActivity {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedItem = (String) parent.getItemAtPosition(position);
-                Log.i("selected item",selectedItem);
+                selectedItem = (Switch) parent.getItemAtPosition(position);
+                Log.i("selected item",selectedItem.name);
             }
 
             @Override
@@ -56,22 +66,27 @@ public class ScheduleActivity extends AppCompatActivity {
                 // TODO Auto-generated method stub
             }
         });
+
+        // active schedules recycler view
+        activeSchedulesRecyclerView = findViewById(R.id.recyclerViewActiveSchedules);
+
+        ActiveSchedulesAdapter activeSchedulesAdapter = new ActiveSchedulesAdapter(HomeAutomation.switchSchedules,this);
+        RecyclerView.LayoutManager activeSchedulesLayoutManager = new LinearLayoutManager(getApplicationContext());
+
+        activeSchedulesRecyclerView.setLayoutManager(activeSchedulesLayoutManager);
+        activeSchedulesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        activeSchedulesRecyclerView.setAdapter(activeSchedulesAdapter);
+
+        // show notice if there is no active schedules
+        if(HomeAutomation.switchSchedules.isEmpty()) {
+            TextView noDataTextView = findViewById(R.id.textViewNoActiveSchedules);
+            noDataTextView.setVisibility(View.VISIBLE);
+        }
     }
 
     public void scheduleSwitchButtonClick(View v) {
         Intent scheduleSwitchIntent = new Intent(this,ScheduleSwitchActivity.class);
-        scheduleSwitchIntent.putExtra("switchName",selectedItem);
+        scheduleSwitchIntent.putExtra("switchName",selectedItem.name);
         startActivity(scheduleSwitchIntent);
-    }
-
-    private ArrayList<String> _getSwitchNames() {
-
-        ArrayList<String> sws = new ArrayList<>();
-
-        for(Switch sw : homeAutomation.switches) {
-            sws.add(sw.name);
-        }
-
-        return sws;
     }
 }

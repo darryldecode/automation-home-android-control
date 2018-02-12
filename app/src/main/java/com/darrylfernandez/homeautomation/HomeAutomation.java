@@ -5,14 +5,16 @@ import android.content.Context;
 
 import com.darrylfernandez.homeautomation.models.Settings;
 import com.darrylfernandez.homeautomation.models.Switch;
+import com.darrylfernandez.homeautomation.models.SwitchSchedule;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class HomeAutomation {
 
     // app version
     public static final String APP_NAME = "Home Automation";
-    public static final String VERSION = "0.0.2";
+    public static final String VERSION = "v0.0.3";
 
     // values
     public static final String VALUE_ON = "1";
@@ -33,6 +35,9 @@ public class HomeAutomation {
 
     // the available switches
     public ArrayList<Switch> switches = new ArrayList<>();
+
+    // the active running schedules
+    public static ArrayList<SwitchSchedule> switchSchedules = new ArrayList<>();
 
     // instance
     public static HomeAutomation instance = null;
@@ -117,5 +122,18 @@ public class HomeAutomation {
         }
 
         return s;
+    }
+
+    // remove the switch schedule on the running schedules
+    public static void removeSwitchSchedule(Switch sw) {
+
+        Iterator<SwitchSchedule> i = switchSchedules.iterator();
+
+        while (i.hasNext()) {
+
+            SwitchSchedule currSwSched = i.next();
+
+            if(currSwSched.aSwitch.name.equals(sw.name)) i.remove();
+        }
     }
 }
