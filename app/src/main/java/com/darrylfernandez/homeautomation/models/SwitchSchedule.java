@@ -30,6 +30,7 @@ public class SwitchSchedule {
     private Context _context;
     public PendingIntent pi;
     public int requestCode;
+    public boolean isExactTimeO = false; // or relative to current time, means add to current time
 
     public SwitchSchedule(){}
 
@@ -41,6 +42,18 @@ public class SwitchSchedule {
         _context = c;
         startTime = Calendar.getInstance();
         requestCode = (int)System.currentTimeMillis();
+        isExactTimeO = false;
+    }
+
+    public SwitchSchedule(Context c, Switch s, int hrs, int mins, String act, boolean isExactTime) {
+        aSwitch = s;
+        scheduleHours = hrs;
+        scheduleMinutes = mins;
+        action = act;
+        _context = c;
+        startTime = Calendar.getInstance();
+        requestCode = (int)System.currentTimeMillis();
+        isExactTimeO = isExactTime;
     }
 
     public static ArrayList<String> getSwitchValues() {
@@ -56,8 +69,16 @@ public class SwitchSchedule {
     public boolean addPendingTrigger() {
 
         Calendar now = Calendar.getInstance();
-        now.add(Calendar.HOUR, scheduleHours);
-        now.add(Calendar.MINUTE, scheduleMinutes);
+
+        // whether the hour and minutes supplied is exact time to trigger the
+        // switch action or maybe relative to current time so just add it
+        if(isExactTimeO) {
+            now.set(Calendar.HOUR, scheduleHours);
+            now.set(Calendar.MINUTE, scheduleMinutes);
+        } else {
+            now.add(Calendar.HOUR, scheduleHours);
+            now.add(Calendar.MINUTE, scheduleMinutes);
+        }
 
         // the schedule trigger intent
         Intent i = new Intent(_context, ScheduleTriggerHandler.class);

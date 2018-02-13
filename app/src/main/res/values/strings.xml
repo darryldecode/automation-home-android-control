@@ -84,4 +84,9 @@
     <string name="no_active_schedules">No Active Schedules</string>
     <string name="remove">remove</string>
     <string name="add_schedule">Add Schedule</string>
+    <string name="choose_a_date_and_time">Choose A Date and TIme</string>
+    <string name="or">OR</string>
+    <string name="selected_date_time">Selected Date/Time:</string>
+    <string name="or_choose_time">Or Choose Time</string>
+    <string name="selected_time">Selected Time</string>
 </resources>

@@ -23,10 +23,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_weight="3"
+                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Action"/>
+                android:text="Switch ON or OFF?"/>
             <Spinner
                 android:layout_weight="1"
                 android:id="@+id/spinnerSelectedAction"
@@ -39,10 +39,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_weight="3"
+                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Hours"/>
+                android:text="Hours From Now"/>
             <EditText
                 android:id="@+id/editTextScheduleHours"
                 android:inputType="number"
@@ -56,10 +56,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView
-                android:layout_weight="3"
+                android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Minutes"/>
+                android:text="Minutes From Now"/>
             <EditText
                 android:id="@+id/editTextScheduleMinutes"
                 android:inputType="number"
@@ -70,13 +70,23 @@
         </LinearLayout>
         <Button
             android:textColor="@color/colorWhite"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="10dp"
             android:id="@+id/buttonSelectSwitchToSchedule"
             android:onClick="btn_saveSwitchScheduleClick"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorGreen"
             android:text="@string/add_schedule"/>
+        <Button
+            android:textColor="@color/colorWhite"
+            android:layout_marginTop="10dp"
+            android:id="@+id/buttonSelectDateTime"
+            android:onClick="btn_selectTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/colorPrimary"
+            android:text="@string/or_choose_time"/>
+
     </LinearLayout>
 
 </ScrollView>

@@ -45,8 +45,10 @@ public class ScheduleActivity extends AppCompatActivity {
 
     public void initializeActivity() {
 
-        Spinner swSelect = findViewById(R.id.selectedSwitch);
+        // set the title
+        setTitle("Switch Schedules");
 
+        Spinner swSelect = findViewById(R.id.selectedSwitch);
 
         // switch spinner
         SwitchArrayAdapter adapter = new SwitchArrayAdapter(this, R.layout.spinner_item,homeAutomation.switches);

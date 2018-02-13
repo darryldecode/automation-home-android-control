@@ -14,7 +14,7 @@ public class HomeAutomation {
 
     // app version
     public static final String APP_NAME = "Home Automation";
-    public static final String VERSION = "v0.0.4";
+    public static final String VERSION = "v0.0.5";
 
     // values
     public static final String VALUE_ON = "1";

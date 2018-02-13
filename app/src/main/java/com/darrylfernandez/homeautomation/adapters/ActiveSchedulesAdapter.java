@@ -66,8 +66,14 @@ public class ActiveSchedulesAdapter extends RecyclerView.Adapter {
 
         // setup pretty time
         Calendar sched = (Calendar) switchSchedule.startTime.clone();
-        sched.add(Calendar.HOUR,switchSchedule.scheduleHours);
-        sched.add(Calendar.MINUTE,switchSchedule.scheduleMinutes);
+
+        if(switchSchedule.isExactTimeO) {
+            sched.set(Calendar.HOUR,switchSchedule.scheduleHours);
+            sched.set(Calendar.MINUTE,switchSchedule.scheduleMinutes);
+        } else {
+            sched.add(Calendar.HOUR,switchSchedule.scheduleHours);
+            sched.add(Calendar.MINUTE,switchSchedule.scheduleMinutes);
+        }
 
         @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat("MMM d, yyyy 'at' h:mm a");
 
@@ -94,7 +100,7 @@ public class ActiveSchedulesAdapter extends RecyclerView.Adapter {
                         // delete the pending schedule
                         // and cancel the alarm manager pending intent
                         switchSchedule.pi.cancel();
-                        HomeAutomation.removeSwitchSchedule(switchSchedule.aSwitch);
+                        HomeAutomation.removeSwitchScheduleByRequestCode(switchSchedule.requestCode);
                         _self.notifyDataSetChanged();
 
                         dialog.dismiss();
